@@ -121,3 +121,25 @@ storyModals.forEach(modal => {
         }
     });
 });
+
+
+//gpt
+
+  const author = document.getElementById("author");
+  const modal = document.getElementById("photoModal");
+  const closeBtn = document.querySelector(".close");
+
+  author.onclick = () => {
+    modal.style.display = "block";
+  };
+
+  closeBtn.onclick = () => {
+    modal.style.display = "none";
+  };
+
+  window.onclick = (e) => {
+    if (e.target === modal) {
+      modal.style.display = "none";
+    }
+  };
+
