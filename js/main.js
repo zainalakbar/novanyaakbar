@@ -143,30 +143,54 @@ checkboxes.forEach((checkbox) => {
 
 // Function to position arrow above "rN" in "AkbarNovaa"
 function positionArrow() {
-  const author = document.getElementById('author');
-  const arrowContainer = document.getElementById('arrow-container');
-  if (!author || !arrowContainer || arrowContainer.style.display === 'none') return;
+  const author = document.getElementById("author");
+  const arrowContainer = document.getElementById("arrow-container");
+  if (!author || !arrowContainer || arrowContainer.style.display === "none")
+    return;
 
   const rect = author.getBoundingClientRect();
   const text = author.textContent;
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
   ctx.font = getComputedStyle(author).font;
-  const widthUpToR = ctx.measureText('Akbar').width; // Width of "Akbar"
+  const widthUpToR = ctx.measureText("Akbar").width; // Width of "Akbar"
   const arrowLeft = rect.left + widthUpToR;
-  arrowContainer.style.left = arrowLeft + 'px';
-  arrowContainer.style.transform = 'translateX(0)'; // Remove translateX(-50%) since we're setting exact left
+  arrowContainer.style.left = arrowLeft + "px";
+  arrowContainer.style.transform = "translateX(0)"; // Remove translateX(-50%) since we're setting exact left
 }
 
 // Position arrow on load, resize, and when shown
-window.addEventListener('load', positionArrow);
-window.addEventListener('resize', positionArrow);
+window.addEventListener("load", positionArrow);
+window.addEventListener("resize", positionArrow);
 
-// Modify checkbox change to position arrow when shown
+// IntersectionObserver for plans section
+const plansSection = document.getElementById("plans");
+const plansObserver = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      const allChecked = Array.from(checkboxes).every((cb) => cb.checked);
+      if (entry.isIntersecting && allChecked) {
+        arrowContainer.style.display = "block";
+        positionArrow();
+      } else {
+        arrowContainer.style.display = "none";
+      }
+    });
+  },
+  { threshold: 0.1 }
+); // Trigger when 10% of the section is visible
+
+plansObserver.observe(plansSection);
+
+// Modify checkbox change to position arrow when shown and section is in view
 checkboxes.forEach((checkbox) => {
   checkbox.addEventListener("change", () => {
     const allChecked = Array.from(checkboxes).every((cb) => cb.checked);
-    if (allChecked) {
+    const isVisible =
+      plansObserver.takeRecords().some((entry) => entry.isIntersecting) ||
+      (plansSection.getBoundingClientRect().top < window.innerHeight &&
+        plansSection.getBoundingClientRect().bottom > 0);
+    if (allChecked && isVisible) {
       arrowContainer.style.display = "block";
       positionArrow();
     } else {
