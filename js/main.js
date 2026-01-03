@@ -141,6 +141,40 @@ checkboxes.forEach((checkbox) => {
   });
 });
 
+// Function to position arrow above "rN" in "AkbarNovaa"
+function positionArrow() {
+  const author = document.getElementById('author');
+  const arrowContainer = document.getElementById('arrow-container');
+  if (!author || !arrowContainer || arrowContainer.style.display === 'none') return;
+
+  const rect = author.getBoundingClientRect();
+  const text = author.textContent;
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  ctx.font = getComputedStyle(author).font;
+  const widthUpToR = ctx.measureText('Akbar').width; // Width of "Akbar"
+  const arrowLeft = rect.left + widthUpToR;
+  arrowContainer.style.left = arrowLeft + 'px';
+  arrowContainer.style.transform = 'translateX(0)'; // Remove translateX(-50%) since we're setting exact left
+}
+
+// Position arrow on load, resize, and when shown
+window.addEventListener('load', positionArrow);
+window.addEventListener('resize', positionArrow);
+
+// Modify checkbox change to position arrow when shown
+checkboxes.forEach((checkbox) => {
+  checkbox.addEventListener("change", () => {
+    const allChecked = Array.from(checkboxes).every((cb) => cb.checked);
+    if (allChecked) {
+      arrowContainer.style.display = "block";
+      positionArrow();
+    } else {
+      arrowContainer.style.display = "none";
+    }
+  });
+});
+
 //gpt
 
 const author = document.getElementById("author");
